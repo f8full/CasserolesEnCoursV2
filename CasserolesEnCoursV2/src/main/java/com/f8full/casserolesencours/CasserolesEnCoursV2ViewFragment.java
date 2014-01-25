@@ -42,6 +42,7 @@ import com.google.android.gms.maps.MapView;
 public class CasserolesEnCoursV2ViewFragment extends MapFragment {
 
     MapView mView;
+    GoogleMap mMap;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -53,7 +54,10 @@ public class CasserolesEnCoursV2ViewFragment extends MapFragment {
         mView = (MapView) layout.findViewById(R.id.map);
         mView.onCreate(savedInstanceState);
 
-        GoogleMap map = mView.getMap();
+        if(checkMap())
+        {
+            mMap.setMyLocationEnabled(true);
+        }
 
         return layout;
     }
@@ -62,6 +66,8 @@ public class CasserolesEnCoursV2ViewFragment extends MapFragment {
     public void onResume() {
         super.onResume();
         mView.onResume();
+
+        checkMap();
     }
 
     @Override
@@ -74,6 +80,16 @@ public class CasserolesEnCoursV2ViewFragment extends MapFragment {
     public void onPause() {
         super.onPause();
         mView.onPause();
+    }
+
+    private boolean checkMap() {
+        // Do a null check to confirm that we have not already instantiated the map.
+        if (mMap == null)
+        {
+            mMap = mView.getMap();
+        }
+
+        return mMap != null;
     }
 
 

@@ -3,9 +3,14 @@
     android:layout_height="fill_parent">
 
     <com.google.android.gms.maps.MapView
+        xmlns:map="http://schemas.android.com/apk/res-auto"
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.MapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        map:cameraTargetLat="45.524733"
+        map:cameraTargetLng="-73.582083"
+        map:cameraZoom="10"
+        />
 
 </RelativeLayout>
