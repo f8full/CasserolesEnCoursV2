@@ -31,13 +31,7 @@ android {
 dependencies {
     compile 'com.android.support:support-v13:+'
     compile 'com.google.android.gms:play-services:4.0.30'
-    compile 'com.google.code.gson:gson:2.+'
-    compile('com.google.api-client:google-api-client:1.+') {
-        exclude group: 'xpp3', module: 'shared'
-        exclude group: 'org.apache.httpcomponents', module: 'httpclient'
-        exclude group: 'junit', module: 'junit'
-        exclude group: 'com.google.android', module: 'android'
-    }
-    compile 'com.google.api-client:google-api-client-android:1.17.+'
 
+    compile 'com.google.apis:google-api-services-fusiontables:v1-rev40-1.17.0-rc'
+    compile 'com.google.http-client:google-http-client-jackson2:1.17.0-rc'
 }
