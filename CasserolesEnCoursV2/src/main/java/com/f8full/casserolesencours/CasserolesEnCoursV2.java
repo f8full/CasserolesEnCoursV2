@@ -33,6 +33,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -43,6 +44,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.fusiontables.Fusiontables;
+import com.google.api.services.fusiontables.Fusiontables.Query.Sql;
+import com.google.api.services.fusiontables.model.Sqlresponse;
+
+
+import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 
 public class CasserolesEnCoursV2 extends Activity implements ActionBar.TabListener {
@@ -61,6 +74,49 @@ public class CasserolesEnCoursV2 extends Activity implements ActionBar.TabListen
      * The {@link ViewPager} that will host the section contents.
      */
     ViewPager mViewPager;
+
+    /** Global instance of the JSON factory. */
+    private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+
+    /** Global instance of the HTTP transport. */
+    private static HttpTransport httpTransport;
+
+    private static Fusiontables client;
+
+    /**
+     * Be sure to specify the name of your application. If the application name is {@code null} or
+     * blank, the application will log a warning. Suggested format is "MyCompany-ProductName/1.0".
+     */
+    private static final String APPLICATION_NAME = "F8Full-CasserolesEnCours/2.0";
+
+    private class ViewerSetupTask extends AsyncTask<Sql, Void, List<List<Object>>> {
+        protected List<List<Object>> doInBackground(Sql... sqlQuery) {
+
+            try {
+                return sqlQuery[0].execute().getRows();
+
+
+            } catch (IllegalArgumentException e) {
+                // For google-api-services-fusiontables-v1-rev1-1.7.2-beta this exception will always
+                // been thrown.
+                // Please see issue 545: JSON response could not be deserialized to Sqlresponse.class
+                // http://code.google.com/p/google-api-java-client/issues/detail?id=545
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        /*protected void onProgressUpdate(Integer... progress) {
+            setProgressPercent(progress[0]);
+        }*/
+
+        protected void onPostExecute(List<List<Object>> result) {
+
+            result.get(0);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +155,32 @@ public class CasserolesEnCoursV2 extends Activity implements ActionBar.TabListen
                     actionBar.newTab()
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
+        }
+
+        try {
+            // initialize the transport
+            httpTransport = new NetHttpTransport();
+
+            // authorization
+            //Credential credential = new Credential();
+
+            // set up global Fusiontables instance
+            client = new Fusiontables.Builder(httpTransport, JSON_FACTORY, null)
+                    .setApplicationName(APPLICATION_NAME).build();
+
+            //System.out.println("Success! Now add code here.");
+            String fromTableID = "1cmlx9aChHUYTWwYivaZucr7NHNsP_ulvEPX1FoM";
+
+
+            Sql sql = client.query().sql("SELECT * FROM " + fromTableID);
+
+            new ViewerSetupTask().execute(sql);
+
+
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
     }
 
@@ -154,7 +236,10 @@ public class CasserolesEnCoursV2 extends Activity implements ActionBar.TabListen
             // Return a PlaceholderFragment (defined as a static inner class below).
             if(position == 1)
             {
-                return new CasserolesEnCoursV2ViewFragment();
+                CasserolesEnCoursV2ViewFragment mapFrag = new CasserolesEnCoursV2ViewFragment();
+                //mapFrag.setupData("TEST");
+
+                return mapFrag;
             }
             else
             {

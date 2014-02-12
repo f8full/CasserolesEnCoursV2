@@ -37,12 +37,12 @@ import android.widget.RelativeLayout;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.services.fusiontables.Fusiontables;
+import com.google.api.services.fusiontables.model.Table;
 
 import java.io.IOException;
 
@@ -51,23 +51,6 @@ public class CasserolesEnCoursV2ViewFragment extends MapFragment {
 
     MapView mView;
     GoogleMap mMap;
-
-    /** Global instance of the JSON factory. */
-    //private static final com.google.api.client.json.JsonFactory JSON_FACTORY = new JsonFactory();
-
-    /** Global instance of the JSON factory. */
-    private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-
-    /** Global instance of the HTTP transport. */
-    private static HttpTransport httpTransport;
-
-    private static Fusiontables client;
-
-    /**
-     * Be sure to specify the name of your application. If the application name is {@code null} or
-     * blank, the application will log a warning. Suggested format is "MyCompany-ProductName/1.0".
-     */
-    private static final String APPLICATION_NAME = "F8Full-CasserolesEnCours/2.0";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -84,24 +67,7 @@ public class CasserolesEnCoursV2ViewFragment extends MapFragment {
             mMap.setMyLocationEnabled(true);
         }
 
-        try {
-            // initialize the transport
-            httpTransport = GoogleNetHttpTransport.newTrustedTransport();
 
-            // authorization
-            //Credential credential = new Credential();
-
-            // set up global Fusiontables instance
-            client = new Fusiontables.Builder(httpTransport, JSON_FACTORY, null)
-                    .setApplicationName(APPLICATION_NAME).build();
-
-            System.out.println("Success! Now add code here.");
-
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
 
         return layout;
     }
@@ -124,6 +90,10 @@ public class CasserolesEnCoursV2ViewFragment extends MapFragment {
     public void onPause() {
         super.onPause();
         mView.onPause();
+    }
+
+    public void setupData(Table tableData){
+
     }
 
     private boolean checkMap() {
